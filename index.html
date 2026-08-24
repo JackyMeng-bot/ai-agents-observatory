@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 智能体前沿观察 · 2026</title>
+<meta name="description" content="一份关于 AI 智能体（AI Agent）的知识分享页：概念、演进、技术底座、生态格局、行业数据与落地场景，基于公开资料整理，截至 2026 年 8 月。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%234d6bfe'/><circle cx='50' cy='50' r='16' fill='%23080b14'/></svg>">
+<style>
+  :root{
+    --bg:#080b14;
+    --bg-soft:#0c1220;
+    --card:rgba(17,24,39,.62);
+    --card-solid:#10182b;
+    --line:rgba(93,120,190,.18);
+    --line-strong:rgba(93,120,190,.35);
+    --text:#e7edf8;
+    --muted:#93a0ba;
+    --faint:#5d6b87;
+    --brand:#4d6bfe;
+    --brand-bright:#6f88ff;
+    --cyan:#22d3ee;
+    --violet:#8b5cf6;
+    --grad:linear-gradient(96deg,#22d3ee 0%,#4d6bfe 48%,#8b5cf6 100%);
+    --radius:16px;
+    --maxw:1120px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:84px}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:rgba(77,107,254,.4)}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- ambient background ---------- */
+  .ambient{position:fixed;inset:0;z-index:-2;pointer-events:none}
+  .ambient::before{
+    content:"";position:absolute;top:-320px;left:50%;transform:translateX(-50%);
+    width:1100px;height:720px;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(77,107,254,.28),transparent 70%);
+    filter:blur(40px);
+  }
+  .ambient::after{
+    content:"";position:absolute;top:340px;right:-260px;
+    width:640px;height:640px;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(139,92,246,.14),transparent 70%);
+    filter:blur(30px);
+  }
+  .grid-bg{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(93,120,190,.055) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(93,120,190,.055) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 55%,transparent 100%);
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 55%,transparent 100%);
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:rgba(8,11,20,.72);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s ease;
+  }
+  nav.scrolled{border-bottom-color:var(--line)}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16.5px;letter-spacing:.2px}
+  .logo-dot{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 210deg,#22d3ee,#4d6bfe,#8b5cf6,#22d3ee);position:relative;flex:none}
+  .logo-dot::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--bg)}
+  .nav-links{display:flex;gap:6px;align-items:center}
+  .nav-links a{font-size:13.5px;color:var(--muted);padding:7px 12px;border-radius:8px;transition:.2s}
+  .nav-links a:hover{color:var(--text);background:rgba(93,120,190,.12)}
+  .nav-cta{
+    font-size:13.5px;color:#fff !important;padding:7px 16px !important;
+    background:linear-gradient(96deg,#4d6bfe,#7c5cff);border-radius:999px !important;font-weight:600;
+  }
+  .nav-cta:hover{filter:brightness(1.12)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:172px 28px 72px;text-align:center;max-width:900px;margin:0 auto}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;color:#aebbe4;letter-spacing:.6px;
+    border:1px solid var(--line-strong);border-radius:999px;padding:6px 16px;
+    background:rgba(77,107,254,.08);
+  }
+  .badge i{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero h1{
+    margin:30px 0 22px;font-weight:800;line-height:1.16;letter-spacing:-.5px;
+    font-size:clamp(38px,6.6vw,74px);
+  }
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .sub{color:var(--muted);font-size:clamp(15.5px,2vw,19px);max-width:680px;margin:0 auto 38px}
+  .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;
+    padding:13px 30px;border-radius:999px;transition:.22s;cursor:pointer;border:none;
+  }
+  .btn-primary{background:linear-gradient(96deg,#4d6bfe,#7c5cff);color:#fff;box-shadow:0 8px 32px rgba(77,107,254,.36)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(77,107,254,.5)}
+  .btn-ghost{border:1px solid var(--line-strong);color:var(--text);background:transparent}
+  .btn-ghost:hover{background:rgba(93,120,190,.12);border-color:var(--brand)}
+
+  /* ---------- stats band ---------- */
+  .stats{max-width:var(--maxw);margin:64px auto 0;padding:0 28px}
+  .stats-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  }
+  .stat{background:var(--bg-soft);padding:28px 22px;text-align:center}
+  .stat b{
+    display:block;font-size:clamp(26px,3.2vw,38px);font-weight:800;letter-spacing:-1px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat span{display:block;margin-top:8px;font-size:12.8px;color:var(--muted);line-height:1.6}
+
+  /* ---------- sections ---------- */
+  section{max-width:var(--maxw);margin:0 auto;padding:104px 28px 0}
+  .kicker{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--brand-bright);
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  }
+  .kicker::before{content:"";width:26px;height:1px;background:var(--grad)}
+  h2{font-size:clamp(27px,3.6vw,40px);font-weight:800;letter-spacing:-.4px;margin-bottom:14px}
+  .sec-desc{color:var(--muted);font-size:15.5px;max-width:760px;margin-bottom:44px}
+  .sec-desc em{color:var(--text);font-style:normal;font-weight:600}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+  }
+  .card:hover{transform:translateY(-4px);border-color:var(--line-strong);box-shadow:0 14px 44px rgba(0,0,0,.4)}
+
+  /* concept */
+  .def-box{
+    border-left:3px solid;border-image:linear-gradient(180deg,#22d3ee,#8b5cf6) 1;
+    background:linear-gradient(90deg,rgba(77,107,254,.09),transparent 65%);
+    padding:26px 30px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:26px;
+    font-size:16.5px;
+  }
+  .def-box b{color:var(--brand-bright)}
+  .comp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .comp-grid .card{padding:24px 22px}
+  .comp-icon{font-size:26px;margin-bottom:14px;display:block}
+  .comp-grid h3{font-size:16.5px;margin-bottom:8px}
+  .comp-grid p{font-size:13.5px;color:var(--muted);line-height:1.7}
+  .vs-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+  .vs-col h3{display:flex;align-items:center;gap:10px;font-size:16px;margin-bottom:14px}
+  .vs-tag{font-size:11.5px;padding:3px 10px;border-radius:999px;letter-spacing:.5px;font-weight:600}
+  .vs-tag.old{background:rgba(147,160,186,.14);color:var(--muted)}
+  .vs-tag.new{background:linear-gradient(96deg,rgba(34,211,238,.16),rgba(139,92,246,.16));color:#b7c6ff}
+  .vs-col ul{list-style:none}
+  .vs-col li{font-size:13.8px;color:var(--muted);padding:7px 0 7px 24px;position:relative;border-bottom:1px dashed rgba(93,120,190,.12)}
+  .vs-col li:last-child{border-bottom:none}
+  .vs-col li::before{position:absolute;left:2px;top:7px;font-size:12px}
+  .vs-col.dim li::before{content:"—";color:var(--faint)}
+  .vs-col.lit li::before{content:"✦";color:var(--cyan)}
+
+  /* timeline */
+  .timeline{position:relative;margin-left:8px;padding-left:36px}
+  .timeline::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,#22d3ee,#4d6bfe,#8b5cf6);opacity:.55}
+  .t-item{position:relative;padding-bottom:34px}
+  .t-item:last-child{padding-bottom:0}
+  .t-item::before{
+    content:"";position:absolute;left:-43px;top:8px;width:14px;height:14px;border-radius:50%;
+    background:var(--bg);border:3px solid var(--brand);box-shadow:0 0 16px rgba(77,107,254,.7);
+  }
+  .t-year{
+    font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:var(--cyan);
+    letter-spacing:2px;margin-bottom:6px;
+  }
+  .t-item h3{font-size:19px;margin-bottom:8px}
+  .t-item h3 small{font-size:12.5px;font-weight:600;color:#b7c6ff;background:rgba(77,107,254,.14);border:1px solid rgba(77,107,254,.3);border-radius:999px;padding:2px 12px;margin-left:10px;vertical-align:2px}
+  .t-item p{color:var(--muted);font-size:14.5px;max-width:760px}
+  .t-item p b{color:var(--text);font-weight:600}
+
+  /* ecosystem table */
+  .table-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;background:var(--bg-soft)}
+  table{width:100%;border-collapse:collapse;min-width:760px}
+  th{
+    text-align:left;font-size:12.5px;letter-spacing:1.5px;color:var(--faint);font-weight:600;
+    padding:16px 22px;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  td{padding:18px 22px;border-bottom:1px solid rgba(93,120,190,.09);font-size:14px;color:var(--muted);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .18s}
+  tbody tr:hover{background:rgba(77,107,254,.06)}
+  td.co{color:var(--text);font-weight:700;white-space:nowrap}
+  td.co small{display:block;font-weight:400;color:var(--faint);font-size:12px;margin-top:2px}
+  td .pill{display:inline-block;font-size:12px;color:#9db4ff;background:rgba(77,107,254,.12);border:1px solid rgba(77,107,254,.28);border-radius:999px;padding:2px 10px;margin:2px 6px 2px 0;white-space:nowrap}
+
+  /* charts */
+  .chart-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:18px}
+  .chart-card .card-title{font-size:15.5px;font-weight:700;margin-bottom:4px}
+  .chart-card .card-sub{font-size:12.5px;color:var(--faint);margin-bottom:22px}
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .bar-label{width:118px;flex:none;font-size:13px;color:var(--muted);text-align:right}
+  .bar-track{flex:1;height:22px;background:rgba(93,120,190,.1);border-radius:6px;overflow:hidden}
+  .bar-fill{
+    height:100%;border-radius:6px;width:0;
+    background:var(--grad);transition:width 1.2s cubic-bezier(.22,1,.36,1);
+    display:flex;align-items:center;justify-content:flex-end;padding-right:8px;
+    font-size:11.5px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);
+    min-width:44px;
+  }
+  .col-bars .bar-row{margin-bottom:20px}
+  .col-bars .bar-label{width:128px}
+  .roi-strip{
+    margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  }
+  .roi-cell{background:var(--bg-soft);padding:20px 16px;text-align:center}
+  .roi-cell b{font-size:21px;color:var(--brand-bright);font-variant-numeric:tabular-nums}
+  .roi-cell span{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.55}
+
+  /* cases */
+  .case-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .case-grid .card{position:relative;overflow:hidden}
+  .case-grid .card::after{
+    content:"";position:absolute;inset:auto -30% -60% auto;width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(77,107,254,.16),transparent);opacity:0;transition:opacity .3s;
+  }
+  .case-grid .card:hover::after{opacity:1}
+  .case-num{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--faint);letter-spacing:2px;display:block;margin-bottom:12px}
+  .case-grid h3{font-size:17px;margin-bottom:8px}
+  .case-grid h3 .hl{color:var(--cyan);font-family:ui-monospace,Menlo,monospace;font-size:14px;margin-left:8px}
+  .case-grid p{font-size:13.5px;color:var(--muted)}
+
+  /* learn path */
+  .path-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:step}
+  .path-card{position:relative}
+  .path-step{
+    width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:14px;color:#fff;
+    background:var(--grad);box-shadow:0 6px 18px rgba(77,107,254,.4);margin-bottom:18px;
+  }
+  .path-card h3{font-size:17px;margin-bottom:10px}
+  .path-card p{font-size:13.8px;color:var(--muted);margin-bottom:12px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-size:12px;color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:4px 12px;transition:.2s}
+  .chip:hover{color:var(--text);border-color:var(--brand);background:rgba(77,107,254,.1)}
+
+  /* outlook */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .split .card h3{display:flex;align-items:center;gap:10px;font-size:17px;margin-bottom:16px}
+  .split ul{list-style:none}
+  .split li{font-size:14px;color:var(--muted);padding:9px 0 9px 26px;position:relative;border-bottom:1px dashed rgba(93,120,190,.12)}
+  .split li:last-child{border-bottom:none}
+  .split li b{color:var(--text)}
+  .up li::before{content:"▲";position:absolute;left:2px;top:11px;font-size:11px;color:var(--cyan)}
+  .down li::before{content:"◆";position:absolute;left:2px;top:12px;font-size:11px;color:#f59e0b}
+
+  /* footer */
+  footer{margin-top:110px;border-top:1px solid var(--line);background:rgba(10,14,25,.6)}
+  .foot-inner{max-width:var(--maxw);margin:0 auto;padding:56px 28px 36px}
+  .foot-cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:40px}
+  .foot-cols h4{font-size:13px;letter-spacing:1.5px;color:var(--faint);margin-bottom:16px;font-weight:600}
+  .foot-cols p{font-size:13.5px;color:var(--muted);max-width:380px}
+  .foot-cols ul{list-style:none}
+  .foot-cols li{margin-bottom:10px}
+  .foot-cols li a{font-size:13.5px;color:var(--muted);transition:.2s}
+  .foot-cols li a:hover{color:var(--brand-bright)}
+  .foot-bottom{border-top:1px solid rgba(93,120,190,.1);padding-top:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--faint)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+  .reveal.visible{opacity:1;transform:none}
+  .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001s !important;transition-duration:.001s !important}
+    html{scroll-behavior:auto}
+  }
+
+  /* responsive */
+  @media (max-width:960px){
+    .comp-grid{grid-template-columns:repeat(2,1fr)}
+    .chart-grid{grid-template-columns:1fr}
+    .case-grid{grid-template-columns:repeat(2,1fr)}
+    .path-grid{grid-template-columns:1fr}
+    .foot-cols{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:680px){
+    .nav-links a:not(.nav-cta){display:none}
+    .hero{padding-top:140px}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .vs-wrap{grid-template-columns:1fr}
+    .split{grid-template-columns:1fr}
+    .case-grid{grid-template-columns:1fr}
+    .comp-grid{grid-template-columns:1fr}
+    .roi-strip{grid-template-columns:repeat(2,1fr)}
+    .foot-cols{grid-template-columns:1fr}
+    .bar-label{width:86px;font-size:12px}
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient"></div>
+<div class="grid-bg"></div>
+
+<!-- ================= NAV ================= -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a class="logo" href="#top"><span class="logo-dot"></span>AI 智能体前沿观察</a>
+    <div class="nav-links">
+      <a href="#concept">概念</a>
+      <a href="#timeline">演进</a>
+      <a href="#tech">技术底座</a>
+      <a href="#ecosystem">生态</a>
+      <a href="#data">数据</a>
+      <a href="#cases">场景</a>
+      <a href="#learn">学习路径</a>
+      <a class="nav-cta" href="#outlook">展望 2030</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <span class="badge"><i></i>截至 2026 年 8 月 · 基于公开资料整理</span>
+  <h1>AI 智能体<br>从<span class="grad-text">「会聊天」</span>到<span class="grad-text">「会做事」</span></h1>
+  <p class="sub">
+    大模型让 AI 学会了思考，智能体（Agent）则让 AI 学会了行动——感知环境、拆解目标、调用工具、自主完成多步任务。
+    这一次，我们用最新的行业数据讲清楚它是什么、从哪来、到哪去。
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#concept">开始探索 ↓</a>
+    <a class="btn btn-ghost" href="#ecosystem">查看生态格局</a>
+  </div>
+
+  <div class="stats reveal d2">
+    <div class="stats-grid">
+      <div class="stat"><b data-count="57.4" data-decimal="1">$0B</b><span>全球智能体市场规模<br>2031 年预测（Mordor Intelligence）</span></div>
+      <div class="stat"><b data-count="80" data-suffix="%">0%</b><span>新发布企业应用内嵌 Agent<br>2026 Q1 · 援引 Gartner</span></div>
+      <div class="stat"><b data-count="80" data-suffix="%">0%</b><span>组织已获可量化经济收益<br>Anthropic《State of AI Agents 2026》</span></div>
+      <div class="stat"><b data-count="407" data-suffix="%">0%</b><span>MCP 官方注册表上线约两月增速<br>收录近 2,000 个 Server</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= CONCEPT ================= -->
+<section id="concept">
+  <div class="kicker reveal">01 / Concept</div>
+  <h2 class="reveal d1">什么是 AI 智能体？</h2>
+  <p class="sec-desc reveal d2">
+    如果说聊天机器人是一位<em>「有问必答的顾问」</em>，那么智能体就是一位<em>「能独立办事的员工」</em>——你给它一个目标，而不是一条条指令。
+  </p>
+
+  <div class="def-box reveal">
+    <b>AI Agent（AI 智能体）：</b>以大语言模型为「大脑」，能够<b>感知环境 → 规划拆解 → 调用工具 → 执行反馈 → 迭代修正</b>，
+    在最少人工干预下自主完成复杂任务的软件系统。
+  </div>
+
+  <div class="comp-grid">
+    <div class="card reveal"><span class="comp-icon">🧠</span><h3>大脑 · LLM</h3><p>大模型负责理解、推理与决策。2026 年旗舰模型（如 GPT-5.5、Claude Opus 4.8）已专门针对智能体工作流训练。</p></div>
+    <div class="card reveal d1"><span class="comp-icon">🗂️</span><h3>记忆 · Memory</h3><p>短期上下文 + 长期记忆库。Anthropic 的「Dreaming」机制甚至能让 Agent 复盘历史会话、自我改进。</p></div>
+    <div class="card reveal d2"><span class="comp-icon">🔧</span><h3>工具 · Tools</h3><p>通过函数调用操作搜索、代码、浏览器与企业系统。MCP 协议让「接工具」像插 USB 一样标准化。</p></div>
+    <div class="card reveal d3"><span class="comp-icon">🗺️</span><h3>规划 · Planning</h3><p>把「写一份行业报告」拆成检索→分析→写作→核查的多步执行链，并在出错时自动重试换路。</p></div>
+  </div>
+
+  <div class="vs-wrap">
+    <div class="card vs-col dim reveal">
+      <h3>传统聊天机器人 <span class="vs-tag old">Chatbot</span></h3>
+      <ul>
+        <li>一问一答，对话结束即结束</li>
+        <li>只能「说」，不能真正执行动作</li>
+        <li>人工主导每一步，AI 只是回答</li>
+        <li>适合问答、客服话术、闲聊陪伴</li>
+      </ul>
+    </div>
+    <div class="card vs-col lit reveal d1">
+      <h3>AI 智能体 <span class="vs-tag new">AGENT</span></h3>
+      <ul>
+        <li>接收目标，自主规划多步执行链路</li>
+        <li>直接操作浏览器、终端、API 与文件</li>
+        <li>遇到失败自动重试、换方案、自我修正</li>
+        <li>适合编程、研究、采购、流程自动化</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TIMELINE ================= -->
+<section id="timeline">
+  <div class="kicker reveal">02 / Evolution</div>
+  <h2 class="reveal d1">演进历程：四年，四个台阶</h2>
+  <p class="sec-desc reveal d2">从「演示玩具」到「生产基建」，AI 智能体用了四年时间走完了云计算十年的采用曲线。</p>
+
+  <div class="timeline">
+    <div class="t-item reveal">
+      <div class="t-year">2023</div>
+      <h3>可能性之年 <small>PROOF OF CONCEPT</small></h3>
+      <p><b>AutoGPT、BabyAGI、LangChain</b> 相继爆火，第一次证明大模型可以「规划并行动」——但昂贵、不可靠，更多是极客圈的演示。</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="t-year">2024</div>
+      <h3>基建之年 <small>INFRASTRUCTURE</small></h3>
+      <p>百万级 token 上下文窗口、成熟 RAG、标准化的工具调用相继就位。<b>11 月，Anthropic 发布 MCP 协议</b>，为「Agent 连接一切」打下统一接口。</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="t-year">2025</div>
+      <h3>企业采用之年 <small>ENTERPRISE ADOPTION</small></h3>
+      <p><b>Devin、OpenAI Operator、Manus</b> 引爆市场，MCP 升级为全行业事实标准；9 月官方 MCP Registry 上线，约两个月内条目增长 <b>407%</b>，逼近 2,000 个。</p>
+    </div>
+    <div class="t-item reveal">
+      <div class="t-year">2026</div>
+      <h3>自主运行之年 <small>AUTONOMOUS OPS</small></h3>
+      <p><b>GPT-5.5</b>(4 月)专为智能体工作流训练，Codex 演示连续 1,000+ 次工具调用无人工干预；<b>Claude Agent SDK 与托管智能体</b>带来多智能体编排与「Dreaming」记忆；据公开报道援引 Gartner，本季度 <b>80%</b> 的新发企业应用至少内嵌一个 Agent。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TECH ================= -->
+<section id="tech">
+  <div class="kicker reveal">03 / Infrastructure</div>
+  <h2 class="reveal d1">支撑它的四大技术底座</h2>
+  <p class="sec-desc reveal d2">2025–2026 年，智能体从「手工作坊」走向「标准化工业」，靠的是这四块地基。</p>
+
+  <div class="comp-grid">
+    <div class="card reveal"><span class="comp-icon">🔌</span><h3>MCP 协议</h3><p>Model Context Protocol，Anthropic 于 2024 年 11 月发布。如今已被各大厂商共同采纳，成为智能体接入数据与工具的「USB-C 接口」。</p></div>
+    <div class="card reveal d1"><span class="comp-icon">🎼</span><h3>多智能体协作</h3><p>「指挥者–执行者」编排成为主流范式。OpenAI 从实验性 Swarm 进化到 AgentKit 可视化画布，像搭积木一样编排多角色协作。</p></div>
+    <div class="card reveal d2"><span class="comp-icon">📦</span><h3>上下文工程</h3><p>Context Engineering 取代单轮提示词：如何把正确的知识、工具与状态装进有限上下文，是 Manus 等产品规模化的核心秘诀。</p></div>
+    <div class="card reveal d3"><span class="comp-icon">✅</span><h3>SDK 与评估体系</h3><p>生产级 Agent SDK 提供沙箱隔离、权限控制与会话记忆；配套 Evals 评估（数据集、轨迹打分、自动调优）决定能否安全上线。</p></div>
+  </div>
+</section>
+
+<!-- ================= ECOSYSTEM ================= -->
+<section id="ecosystem">
+  <div class="kicker reveal">04 / Ecosystem</div>
+  <h2 class="reveal d1">生态格局：巨头与黑马同场竞技</h2>
+  <p class="sec-desc reveal d2">海外看 OpenAI 与 Anthropic 的平台之争，国内看开源与长文本的差异化突围。</p>
+
+  <div class="table-wrap reveal">
+    <table>
+      <thead>
+        <tr><th>玩家</th><th>关键产品</th><th>亮点与定位</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="co">OpenAI<small>美国</small></td>
+          <td><span class="pill">GPT-5.5</span><span class="pill">AgentKit</span><span class="pill">Codex</span></td>
+          <td>Agent Builder 可视化编排被称为「智能体界的 Canva」；客户 Ramp 借此将迭代周期缩短 70%。旧 Assistants API 将于 2026 年 8 月 26 日退役，全面转向 Responses API。</td>
+        </tr>
+        <tr>
+          <td class="co">Anthropic<small>美国</small></td>
+          <td><span class="pill">Claude Opus 4.8</span><span class="pill">Agent SDK</span><span class="pill">MCP</span></td>
+          <td>MCP 制定者，生态卡位最深；Agent SDK 提供多智能体编排、私有网络隧道与「Dreaming」自省记忆，安全合规口碑领先。</td>
+        </tr>
+        <tr>
+          <td class="co">Google<small>美国</small></td>
+          <td><span class="pill">Gemini 系列</span><span class="pill">A2A 协议</span></td>
+          <td>原生多模态 + 长上下文，深度绑定 Google 办公生态；推动 Agent 间互操作的 A2A 开放协议。</td>
+        </tr>
+        <tr>
+          <td class="co">DeepSeek<small>中国</small></td>
+          <td><span class="pill">DeepSeek-V4-Pro</span><span class="pill">Responses API</span></td>
+          <td>官方宣称显著增强 Agent 能力并支持 Codex 集成；延续开源 + 高性价比路线，是国内私有化部署的热门底座。</td>
+        </tr>
+        <tr>
+          <td class="co">月之暗面 Kimi<small>中国</small></td>
+          <td><span class="pill">Kimi K3</span><span class="pill">Swarm 集群</span></td>
+          <td>K3 主打「Swarm 智能体集群 + Goal 模式」并行执行任务，可生成 3D 游戏与咨询级 PPT，聚焦知识工作场景。</td>
+        </tr>
+        <tr>
+          <td class="co">Manus<small>中国/新加坡</small></td>
+          <td><span class="pill">通用智能体</span></td>
+          <td>以极致的上下文工程著称的通用执行 Agent，2025 年现象级出圈，验证了「垂直整合体验」的商业可行性。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= DATA ================= -->
+<section id="data">
+  <div class="kicker reveal">05 / Data</div>
+  <h2 class="reveal d1">行业数据：钱和人都正在涌进来</h2>
+  <p class="sec-desc reveal d2">不同机构的口径略有差异，但方向完全一致：<em>指数级增长</em>。</p>
+
+  <div class="chart-grid">
+    <div class="card chart-card reveal">
+      <div class="card-title">全球 Agentic AI 市场规模预测（美元）</div>
+      <div class="card-sub">口径：Deloitte《TMT Predictions 2026》；若编排得当可达 $45B，Mordor Intelligence 预测 2031 达 $57.4B</div>
+      <div class="bar-row">
+        <div class="bar-label">2024</div>
+        <div class="bar-track"><div class="bar-fill" data-w="15%">$5.1B</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">2026E</div>
+        <div class="bar-track"><div class="bar-fill" data-w="24%">$8.5B</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">2028E</div>
+        <div class="bar-track"><div class="bar-fill" data-w="52%">≈$19B</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">2030E</div>
+        <div class="bar-track"><div class="bar-fill" data-w="95%">$35–47B</div></div>
+      </div>
+    </div>
+    <div class="card chart-card col-bars reveal d1">
+      <div class="card-title">企业落地的最大障碍</div>
+      <div class="card-sub">瓶颈已不是模型能力 · 来源：Anthropic 2026 企业智能体报告</div>
+      <div class="bar-row">
+        <div class="bar-label">系统集成</div>
+        <div class="bar-track"><div class="bar-fill" data-w="46%">46%</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">实施成本</div>
+        <div class="bar-track"><div class="bar-fill" data-w="43%">43%</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">数据质量</div>
+        <div class="bar-track"><div class="bar-fill" data-w="42%">42%</div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">变革管理</div>
+        <div class="bar-track"><div class="bar-fill" data-w="39%">39%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="roi-strip reveal">
+    <div class="roi-cell"><b>$37B</b><span>企业 2025 年 GenAI 支出<br>同比 3.2 倍（Menlo Ventures）</span></div>
+    <div class="roi-cell"><b data-count="31.8" data-decimal="1" data-suffix="%">0</b><span>开发者正在使用 AI Agent<br>其中 14.1% 每天使用（Stack Overflow 2025）</span></div>
+    <div class="roi-cell"><b data-count="60" data-suffix="%">0</b><span>企业已用 Agent 做<br>数据分析与报告生成</span></div>
+    <div class="roi-cell"><b data-count="88" data-suffix="%">0</b><span>预期 2026 年回报<br>持续或扩大（Anthropic 报告）</span></div>
+  </div>
+
+  <p style="margin-top:16px;font-size:12.5px;color:var(--faint)" class="reveal">
+    补充口径：企业 GenAI 支出 2025 年达 $37B、同比 3.2 倍（Menlo Ventures）；2025 年全球私人 AI 投资 $3,447 亿、同比 +127.5%（Stanford HAI《AI Index 2026》）。
+  </p>
+</section>
+
+<!-- ================= CASES ================= -->
+<section id="cases">
+  <div class="kicker reveal">06 / Use Cases</div>
+  <h2 class="reveal d1">落地场景：哪些事已经真金白银见效</h2>
+  <p class="sec-desc reveal d2">不再谈概念，只看已经被验证的生产力数字。</p>
+
+  <div class="case-grid">
+    <div class="card reveal"><span class="case-num">CASE 01</span><h3>软件工程<span class="hl">#最成熟</span></h3><p>编码是当前第一大用例，覆盖开发全生命周期。Lovable 借助智能体将发版速度提升约 <b>20 倍</b>。</p></div>
+    <div class="card reveal d1"><span class="case-num">CASE 02</span><h3>客户服务<span class="hl">Gartner</span></h3><p>预测到 2028 年，<b>80%</b> 的面向客户业务流程将由多智能体协同处理，人机分工成为常态。</p></div>
+    <div class="card reveal d2"><span class="case-num">CASE 03</span><h3>B2B 采购<span class="hl">$15T+</span></h3><p>到 2028 年约 <b>90%</b> 的 B2B 采购将由 Agent 中介主导，涉及交易额超 <b>15 万亿美元</b>（Gartner）。</p></div>
+    <div class="card reveal"><span class="case-num">CASE 04</span><h3>法律与风控<span class="hl">5h → 7min</span></h3><p>Thomson Reuters 把法律分析从数小时压缩到分钟级；某威胁检测企业的分析耗时从 5 小时降至 7 分钟。</p></div>
+    <div class="card reveal d1"><span class="case-num">CASE 05</span><h3>智能商务<span class="hl">$3,000–5,000亿</span></h3><p>Bain 预测 2030 年美国由 AI Agent 参与完成的商务规模达 <b>$3,000–5,000 亿</b>，占电商 15–25%；黑五期间 Agent 已影响 30 亿美元成交。</p></div>
+    <div class="card reveal d2"><span class="case-num">CASE 06</span><h3>内部流程自动化<span class="hl">48%</span></h3><p><b>48%</b> 的企业已将 Agent 用于内部流程自动化，财务、HR、供应链是渗透最快的三类部门。</p></div>
+  </div>
+</section>
+
+<!-- ================= LEARN ================= -->
+<section id="learn">
+  <div class="kicker reveal">07 / Playbook</div>
+  <h2 class="reveal d1">三步上手：普通人的学习路径</h2>
+  <p class="sec-desc reveal d2">不必先学编程，也不必等「完美时机」——按这个顺序推进即可。</p>
+
+  <div class="path-grid">
+    <div class="card path-card reveal">
+      <div class="path-step">01</div>
+      <h3>认知入门</h3>
+      <p>理解提示词、上下文与工具调用的基本逻辑。先用免费产品建立直觉：DeepSeek、Kimi、豆包都能直接体验 Agent 能力。</p>
+      <div class="chips"><span class="chip">Prompt 基础</span><span class="chip">免费额度练手</span><span class="chip">建立 AI 直觉</span></div>
+    </div>
+    <div class="card path-card reveal d1">
+      <div class="path-step">02</div>
+      <h3>动手搭建</h3>
+      <p>零代码党玩 OpenAI AgentBuilder 这类可视化画布；开发者直接上 Claude Agent SDK 或开源框架，并学会用 MCP 给 Agent 接工具。</p>
+      <div class="chips"><span class="chip">AgentKit 画布</span><span class="chip">Claude Agent SDK</span><span class="chip">MCP 接入</span></div>
+    </div>
+    <div class="card path-card reveal d2">
+      <div class="path-step">03</div>
+      <h3>生产落地</h3>
+      <p>补齐评估（Evals）、权限沙箱与成本监控三件套；从一个高频小流程切入（周报汇总、工单分类），跑通后再横向扩展。</p>
+      <div class="chips"><span class="chip">Evals 评估</span><span class="chip">安全护栏</span><span class="chip">小切口推广</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OUTLOOK ================= -->
+<section id="outlook">
+  <div class="kicker reveal">08 / Outlook</div>
+  <h2 class="reveal d1">展望 2030：机遇与冷思考并存</h2>
+  <p class="sec-desc reveal d2">既不吹捧，也不恐慌——把两边的证据都摆在桌面上。</p>
+
+  <div class="split">
+    <div class="card up reveal">
+      <h3>🚀 正在发生的未来</h3>
+      <ul>
+        <li><b>2027</b>：GenAI + Agent 对主流生产力工具发起 30 年来最严峻挑战，牵动 <b>$580 亿</b>市场重构（Gartner）</li>
+        <li><b>2028</b>：<b>90%</b> B2B 采购经 Agent 中介完成；可验证的经营数据将成为新的「硬通货」</li>
+        <li><b>2030</b>：<b>20%</b> 货币交易「可编程化」，Agent 成为具备经济决策权的「机器客户」（Gartner）</li>
+        <li>招聘端：美国 <b>5.9%</b> 的职位发布与 AI 相关，超过 2022 年峰值近一倍（Indeed Hiring Lab）</li>
+      </ul>
+    </div>
+    <div class="card down reveal d1">
+      <h3>🧊 值得警惕的另一面</h3>
+      <ul>
+        <li>严格来说只有 <b>16%</b> 的企业 AI 部署称得上「真 Agent」，多数仍是固定流程编排（Menlo Ventures）</li>
+        <li>到 2026 年底，因 AI 安全措施不足引发的法律诉讼预计超 <b>2,000 起</b>（Gartner）</li>
+        <li>到 2027 年，碎片化 AI 法规将覆盖全球 <b>50%</b> 经济体，合规投入约 <b>$50 亿</b></li>
+        <li>对 AI 的过度依赖可能侵蚀批判性思维——<b>人的判断力</b>反而更稀缺、更值钱</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-cols">
+      <div>
+        <a class="logo" href="#top" style="margin-bottom:16px"><span class="logo-dot"></span>AI 智能体前沿观察</a>
+        <p>一份持续更新的 AI Agent 知识分享页。所有数据均来自公开报道与研究机构，截至 2026 年 8 月整理；观点仅供参考，请以各机构原始报告为准。</p>
+      </div>
+      <div>
+        <h4>主要数据来源</h4>
+        <ul>
+          <li><a href="https://www.mordorintelligence.com/industry-reports/agentic-ai-market" target="_blank" rel="noopener">Mordor Intelligence · Agentic AI Market</a></li>
+          <li><a href="https://www.marketsandmarkets.com/Market-Reports/enterprise-agentic-ai-market-219711254.html" target="_blank" rel="noopener">MarketsandMarkets · Enterprise Agentic AI</a></li>
+          <li><a href="https://www.statista.com/statistics/1552183/global-agentic-ai-market-value" target="_blank" rel="noopener">Statista × Capgemini 市场预测</a></li>
+          <li><a href="https://prefactor.tech/learn/ai-agent-adoption-statistics" target="_blank" rel="noopener">Prefactor · 62 项采用统计汇编</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>延伸阅读</h4>
+        <ul>
+          <li><a href="https://www.arcade.dev/blog/5-takeaways-2026-state-of-ai-agents-claude" target="_blank" rel="noopener">State of AI Agents 2026 五大要点</a></li>
+          <li><a href="https://tao-hpu.medium.com/ai-agent-landscape-2025-2026-a-technical-deep-dive-abda86db7ae2" target="_blank" rel="noopener">AI Agent Landscape 2025–2026 技术综述</a></li>
+          <li><a href="https://www.metacto.com/blogs/evolution-of-ai-agents-2023-to-2026" target="_blank" rel="noopener">AI Agents 演进时间线 2023–2026</a></li>
+          <li><a href="https://www.sohu.com/a/953583421_121337531" target="_blank" rel="noopener">Gartner 2026+ 十大战略预测（中文）</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 AI 智能体前沿观察 · 仅用于知识分享</span>
+      <span>Designed with 🖤 in Dark Mode · 数据截至 2026.08</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // nav border on scroll
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>10),{passive:true});
+
+  // reveal on scroll
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting)return;
+      e.target.classList.add('visible');
+      // animate bars inside revealed card
+      e.target.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.dataset.w});
+      io.unobserve(e.target);
+    });
+  },{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // counters
+  function animateCount(el){
+    const target=parseFloat(el.dataset.count);
+    const dec=parseInt(el.dataset.decimal||'0');
+    const suffix=el.dataset.suffix||'';
+    const dur=1400,t0=performance.now();
+    function tick(t){
+      const p=Math.min((t-t0)/dur,1);
+      const eased=1-Math.pow(1-p,3);
+      el.textContent=(target*eased).toFixed(dec)+suffix;
+      if(p<1)requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const cio=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const el=e.target;
+        if(el.textContent.startsWith('$')){
+          const target=parseFloat(el.dataset.count),dec=parseInt(el.dataset.decimal||'0');
+          const t0=performance.now();
+          (function tk(t){const p=Math.min((t-t0)/1400,1);const v=(target*(1-Math.pow(1-p,3))).toFixed(dec);
+            el.textContent='$'+v+'B';if(p<1)requestAnimationFrame(tk)})(t0);
+        }else{
+          animateCount(el);
+        }
+        cio.unobserve(el);
+      }
+    });
+  },{threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+</script>
+</body>
+</html>
